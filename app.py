@@ -119,7 +119,8 @@ def fetch_bitcoin_data(start_date, end_date=None):
     btc_data['Close'] = pd.to_numeric(btc_data['Close'], errors='coerce')
     btc_data['Volume'] = pd.to_numeric(btc_data['Volume'], errors='coerce')
 
-    return btc_data.dropna()
+    return btc_data.dropna(subset=['Close', 'Volume'])
+    
 
 
 def create_features(df, lookback=7):
@@ -233,8 +234,8 @@ if st.sidebar.button(" Run Prediction", type="primary", use_container_width=True
     with st.spinner(" Fetching Bitcoin data..."):
         btc_data = fetch_bitcoin_data(start_date.strftime('%Y-%m-%d'))
     
-    if len(btc_data) < 100:
-        st.error(" Not enough data. Please select an earlier start date.")
+    if len(btc_data) < lookback_days + 60:
+        st.error("⚠️ Not enough data for selected parameters.")
         st.stop()
     
     st.success(f" Loaded {len(btc_data)} days of Bitcoin data")
